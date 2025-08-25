@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": ""
+    "start": "node server.js",
+    "test": "echo \"No tests yet\" && exit 0",
+    "build": "echo \"Build step not needed for Node app\""
   },
   "author": "",
   "license": "ISC",
