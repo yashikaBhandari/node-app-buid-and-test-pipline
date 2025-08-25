@@ -1,30 +1,34 @@
 const express = require('express');
+const axios = require('axios');  // HTTP request bhejne ke liye
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json()); // for parsing JSON bodies
-
-// Default route
+// Home route
 app.get('/', (req, res) => {
   res.send('Hello from Node + Jenkins 🚀');
 });
 
-// Health check
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+// Trigger Jenkins build (POST hi use karna)
+app.post('/build', async (req, res) => {
+  try {
+    // Jenkins URL + job name
+    const jenkinsUrl = 'http://localhost:8080/job/MyFirstPipeline/build';
+
+    // Username + API Token se authenticate karo
+    const username = 'admin';
+    const apiToken = 'your_api_token';
+
+    const response = await axios.post(jenkinsUrl, {}, {
+      auth: { username, password: apiToken }
+    });
+
+    res.json({ message: 'Build triggered successfully!', data: response.status });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: error.message });
+  }
 });
 
-// Jenkins build trigger route (POST required)
-app.post('/build', (req, res) => {
-  // Aap chahe toh yaha payload bhi bhej sakte ho
-  console.log("Build trigger request received:", req.body);
-
-  // Just send response (Jenkins will need POST request)
-  res.json({ message: 'Build triggered via POST method ✅' });
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
-
-if (require.main === module) {
-  app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
-}
-
-module.exports = app;
